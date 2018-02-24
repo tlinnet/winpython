@@ -75,3 +75,12 @@ def get_std_sample(N=1000):
         df_i[label] = df_c
 
     return df, df_i
+    
+def create_rand_series(df=None, mu=None, ex=None):
+    N = len(df.index)
+    # From the fractional / relative uncertainty, calculate the standard deviation
+    sigma = ex * mu
+    rand_nrs = sigma * np.random.randn(N) + mu
+    # Create Series
+    s = pd.Series(rand_nrs, index=df.index)
+    return s
