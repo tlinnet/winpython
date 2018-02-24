@@ -60,6 +60,7 @@ def get_std_sample(N=1000):
     sample = get_sample(N=N, dists=dists)
     # Make data frame
     df = pd.DataFrame.from_records(sample, columns=labels)
+    df['Alle'] = pd.Series(['Alle']*N, index=df.index)
     df['val'] = pd.Series(np.ones(N), index=df.index)
 
     # Create info
