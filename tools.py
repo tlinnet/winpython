@@ -1,5 +1,9 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.mlab as mlab
+
+# https://stackoverflow.com/questions/4700614/how-to-put-the-legend-out-of-the-plot
 
 d = {
     'Alder':{
@@ -77,11 +81,34 @@ def get_std_sample(N=1000):
 
     return df, df_i
     
-def create_rand_series(df=None, mu=None, ex=None):
+def create_rand_series(df=None, x_avg=None, ex=None):
     N = len(df.index)
     # From the fractional / relative uncertainty, calculate the standard deviation
-    sigma = ex * mu
-    rand_nrs = sigma * np.random.randn(N) + mu
+    sigma = ex * x_avg
+    rand_nrs = sigma * np.random.randn(N) + x_avg
     # Create Series
     s = pd.Series(rand_nrs, index=df.index)
     return s
+    
+def create_boxplot_hist(df=None, col=None):
+    # Plot histogram af punkters
+    f, (ax1, ax2) = plt.subplots(2,1, figsize=(10,5), sharex=True, gridspec_kw={'height_ratios': [1, 2]})
+    f.subplots_adjust(hspace=0)
+
+    v = df[col]
+    ax1.boxplot(v, notch=False, sym=None, vert=False)
+
+    mean = np.mean(v)
+    sigma = np.std(v)
+    x = np.linspace(min(v), max(v), len(v))
+    # Plot
+    ax2.hist(v, normed=True, bins=20)
+    p = ax2.plot(x, mlab.normpdf(x, mean, sigma))
+    c = p[-1].get_color() 
+    ax2.axvline(x=180, c="k")
+    ax2.axvline(x=mean, c=c)
+    ax2.axvline(x=mean+sigma, c="b")
+    ax2.axvline(x=mean-sigma, c="b")
+    ax2.axvline(x=mean+2*sigma, c="b")
+    ax2.axvline(x=mean-2*sigma, c="b")
+    return f, ax1, ax2, mean, sigma
